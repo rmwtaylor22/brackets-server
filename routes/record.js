@@ -1,102 +1,91 @@
-const express = require("express");
+/* // aquire express 
+const express = require('express')
 
-// routes is an instance of the express router.
-// We use it to define our routes.
-// The router will be added as a middleware and will take control of requests starting with path /record.
-const routes = express.Router();
+// initialize the application
+const app = express()
 
-// This will help us connect to the database
-const dbo = require("../db/conn");
-
-// This help convert the id from string to ObjectId for the _id.
-const ObjectId = require("mongodb").ObjectId;
-
-
-// Login stuff
-// const express = require('express');
+// cors is middleware, helps communication between the cross origin
 const cors = require('cors')
-const app = express();
+app.use(cors())
 
-app.use(cors());
+// Stringifies the data coming in from the requests
+app.use(express.json())
 
-app.use('/login', (req, res) => {
-  res.send({
-    token: 'test123'
-  });
-});
+// add mongoose
+const mongoose = require('mongoose')
 
-app.listen(3000, () => console.log('API is running on http://localhost:3000/login'));
+const mongoAtlasUri =
+'mongodb+srv://mern:mongodb@brackets.l3ri0.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////
+try {
+  // Connect to the MongoDB cluster
+  mongoose.connect(
+    mongoAtlasUri,
+    { useNewUrlParser: true, useUnifiedTopology: true },
+    () => console.log(" Mongoose is connected"),
+  );
+} catch (e) {
+  console.log("could not connect");
+}
 
-// This section will help you get a list of all the records.
-routes.route("/record").get(function (req, res) {
-  let db_connect = dbo.getDb();
-  db_connect
-    .collection("records")
-    .find({})
-    .toArray(function (err, result) {
-      if (err) throw err;
-      res.json(result);
-    });
-});
+const dbConnection = mongoose.connection;
+dbConnection.on("error", (err) => console.log(`Connection error ${err}`));
+dbConnection.once("open", () => console.log("Connected to DB!"));
 
-// This section will help you get a single record by id
-routes.route("/record/:id").get(function (req, res) {
-  let db_connect = dbo.getDb();
-  let myquery = { _id: ObjectId(req.params.id) };
-  db_connect.collection("records").findOne(myquery, function (err, result) {
-    if (err) throw err;
-    res.json(result);
-  });
-});
+// import user model
+const User = require('./models/user.model')
 
-// This section will help you create a new record.
-routes.route("/record/add").post(function (req, response) {
-  let db_connect = dbo.getDb();
-  let myobj = {
-    person_name: req.body.person_name,
-    person_position: req.body.person_position,
-    person_level: req.body.person_level,
-  };
-  db_connect.collection("records").insertOne(myobj, function (err, res) {
-    if (err) throw err;
-    response.json(res);
-  });
-});
 
-// This section will help you update a record by id.
-routes.route("/update/:id").post(function (req, response) {
-  let db_connect = dbo.getDb();
-  let myquery = { _id: ObjectId(req.params.id) };
-  let newvalues = {
-    $set: {
-      person_name: req.body.person_name,
-      person_position: req.body.person_position,
-      person_level: req.body.person_level,
-    },
-  };
-  db_connect
-    .collection("records")
-    .updateOne(myquery, newvalues, function (err, res) {
-      if (err) throw err;
-      console.log("1 document updated");
-      response.json(res);
-    });
-});
+// call some routes
 
-// This section will help you delete a record
-routes.route("/:id").delete((req, response) => {
-  let db_connect = dbo.getDb();
-  let myquery = { _id: ObjectId(req.params.id) };
-  db_connect.collection("records").deleteOne(myquery, function (err, obj) {
-    if (err) throw err;
-    console.log("1 document deleted");
-    response.status(obj);
-  });
-});
+// register
+app.post('/user/register', async (req, res) => {
+    console.log(req.body)
+    try {
+        await User.create({
+            name: req.body.name,
+            username: req.body.username,
+            password: req.body.password,
+        })
+        res.json({ status: 'ok' })
+    } catch (err) {
+        console.log(err)
+        res.json({ status: 'error', error: 'Duplicate username' })
+    }
+})
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// login
+app.post('/user/login', async (req, res) => {
+    const user = await User.findOne({
+        username: req.body.username,
+        password: req.body.password,
+    })
+
+    if (user) {
+        return res.json({ status: 'ok', user: true })
+    } else {
+        return res.json({ status: 'error', user: false })
+    }
+})
+
+
+
+// start the server
+app.listen(1337, () => {
+    console.log('Server started on 1337')
+}) */
+
+
+
+
+
+
+
+
+
+/* 
+
 
 // This section will help you get a list of all the users.
 routes.route("/user").get(function (req, res) {
@@ -117,40 +106,6 @@ routes.route("/user/:id").get(function (req, res) {
   db_connect.collection("users").findOne(myquery, function (err, result) {
     if (err) throw err;
     res.json(result);
-  });
-});
-
-// This section will help you get a single user by username
-routes.route("/user/:username").get(function (req, res) {
-  let db_connect = dbo.getDb();
-  let myquery = { username: req.params.username };
-  db_connect.collection("users").findOne(myquery, function (err, result) {
-    if (err) throw err;
-    res.json(result);
-  });
-});
-
-// This section will help you create a new user.
-routes.route("/user/add").post(function (req, response) {
-  let db_connect = dbo.getDb();
-  let myobj = {
-    name: req.body.name,
-    username: req.body.username,
-    password: req.body.password,
-    points: 0,
-    date: Date.now()
-  };
-  /*
-  let user = db_connect.collection("users").findOne({username});
-  if(user) {
-    return res.status(400).json({
-      msg: "User Already Exists"
-  });
-  }
-  */
-  db_connect.collection("users").insertOne(myobj, function (err, res) {
-    if (err) throw err;
-    response.json(res);
   });
 });
 
@@ -184,6 +139,4 @@ routes.route("/user/:id").delete((req, response) => {
     console.log("1 document deleted");
     response.status(obj);
   });
-});
-
-module.exports = routes;
+}); */

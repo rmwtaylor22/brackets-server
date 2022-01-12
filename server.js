@@ -1,20 +1,74 @@
+// aquire express
 const express = require("express");
-const app = express();
-const cors = require("cors");
-require("dotenv").config({ path: "./config.env" });
-const port = process.env.PORT || 5000;
-app.use(cors());
-app.use(express.json());
-app.use(require("./routes/record"));
 
-// get driver connection
-const dbo = require("./db/conn");
- 
-app.listen(port, () => {
-  // perform a database connection when server starts
-  dbo.connectToServer(function (err) {
-    if (err) console.error(err);
- 
+// initialize the application
+const app = express();
+
+// cors is middleware, helps communication between the cross origin
+const cors = require("cors");
+app.use(cors());
+
+// Stringifies the data coming in from the requests
+app.use(express.json());
+
+// add mongoose
+const mongoose = require("mongoose");
+
+const mongoAtlasUri =
+  "mongodb+srv://mern:mongodb@brackets.l3ri0.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+
+try {
+  // Connect to the MongoDB cluster
+  mongoose.connect(
+    mongoAtlasUri,
+    { useNewUrlParser: true, useUnifiedTopology: true },
+    () => console.log(" Mongoose is connected")
+  );
+} catch (e) {
+  console.log("could not connect");
+}
+
+const dbConnection = mongoose.connection;
+dbConnection.on("error", (err) => console.log(`Connection error ${err}`));
+dbConnection.once("open", () => console.log("Connected to DB!"));
+
+// import user model
+const User = require("./models/user.model");
+
+// call some routes
+
+// register
+app.post("/api/user/register", async (req, res) => {
+  console.log(req.body);
+  try {
+    await User.create({
+      name: req.body.name,
+      username: req.body.username,
+      password: req.body.password,
+    });
+    res.json({ status: "ok" });
+  } catch (err) {
+    console.log(err);
+    res.json({ status: "error", error: "Duplicate username" });
+  }
+});
+
+// login
+app.post("/api/user/login", async (req, res) => {
+  const user = await User.findOne({
+    username: req.body.username,
+    password: req.body.password,
   });
-  console.log(`Server is running on port: ${port}`);
+
+  if (user) {
+    const token = 'secret123';
+    return res.json({ status: "ok", user: token });
+  } else {
+    return res.json({ status: "error", user: false });
+  }
+});
+
+// start the server
+app.listen(1337, () => {
+  console.log("Server started on 1337");
 });
