@@ -1,4 +1,4 @@
-/* // aquire express 
+// aquire express 
 const express = require('express')
 
 // initialize the application
@@ -139,4 +139,4 @@ routes.route("/user/:id").delete((req, response) => {
     console.log("1 document deleted");
     response.status(obj);
   });
-}); */
+});
