@@ -29,81 +29,28 @@ app.listen(3000, () => console.log('API is running on http://localhost:3000/logi
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// This section will help you get a list of all the records.
-routes.route("/record").get(function (req, res) {
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// This section will help you get a list of all the users.
+routes.route("/user").get(function (req, res) {
   let db_connect = dbo.getDb();
+  var mysort = { points: -1 };
   db_connect
-    .collection("records")
+    .collection("users")
     .find({})
+    .sort(mysort)
     .toArray(function (err, result) {
       if (err) throw err;
       res.json(result);
     });
 });
 
-// This section will help you get a single record by id
-routes.route("/record/:id").get(function (req, res) {
+routes.route("/games/").get(function (req, res) {
   let db_connect = dbo.getDb();
-  let myquery = { _id: ObjectId(req.params.id) };
-  db_connect.collection("records").findOne(myquery, function (err, result) {
-    if (err) throw err;
-    res.json(result);
-  });
-});
-
-// This section will help you create a new record.
-routes.route("/record/add").post(function (req, response) {
-  let db_connect = dbo.getDb();
-  let myobj = {
-    person_name: req.body.person_name,
-    person_position: req.body.person_position,
-    person_level: req.body.person_level,
-  };
-  db_connect.collection("records").insertOne(myobj, function (err, res) {
-    if (err) throw err;
-    response.json(res);
-  });
-});
-
-// This section will help you update a record by id.
-routes.route("/update/:id").post(function (req, response) {
-  let db_connect = dbo.getDb();
-  let myquery = { _id: ObjectId(req.params.id) };
-  let newvalues = {
-    $set: {
-      person_name: req.body.person_name,
-      person_position: req.body.person_position,
-      person_level: req.body.person_level,
-    },
-  };
+  var query = { round: 1, bracket: "east" };
   db_connect
-    .collection("records")
-    .updateOne(myquery, newvalues, function (err, res) {
-      if (err) throw err;
-      console.log("1 document updated");
-      response.json(res);
-    });
-});
-
-// This section will help you delete a record
-routes.route("/:id").delete((req, response) => {
-  let db_connect = dbo.getDb();
-  let myquery = { _id: ObjectId(req.params.id) };
-  db_connect.collection("records").deleteOne(myquery, function (err, obj) {
-    if (err) throw err;
-    console.log("1 document deleted");
-    response.status(obj);
-  });
-});
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// This section will help you get a list of all the users.
-routes.route("/user").get(function (req, res) {
-  let db_connect = dbo.getDb();
-  db_connect
-    .collection("users")
-    .find({})
+    .collection("teams")
+    .find(query)
     .toArray(function (err, result) {
       if (err) throw err;
       res.json(result);
@@ -155,35 +102,18 @@ routes.route("/user/add").post(function (req, response) {
 });
 
 
-// This section will help you update a user by id.
-routes.route("/update/user/:id").post(function (req, response) {
+// This section will help you get a list of all the users.
+routes.route("/team/:region").get(function (req, res) {
   let db_connect = dbo.getDb();
-  let myquery = { _id: ObjectId(req.params.id) };
-  let newvalues = {
-    $set: {
-      name: req.body.name,
-      username: req.body.username,
-      password: req.body.password
-    },
-  };
+  var query = { round: 1, bracket: req.params.region };
   db_connect
-    .collection("users")
-    .updateOne(myquery, newvalues, function (err, res) {
+    .collection("teams")
+    .find( query , { projection: { _id: 0, 'teamA.name': 1, 'teamB.name': 1 }})
+    .toArray(function (err, result) {
       if (err) throw err;
-      console.log("1 document updated");
-      response.json(res);
+      console.log(result);
+      res.json(result);
     });
-});
-
-// This section will help you delete a record
-routes.route("/user/:id").delete((req, response) => {
-  let db_connect = dbo.getDb();
-  let myquery = { _id: ObjectId(req.params.id) };
-  db_connect.collection("users").deleteOne(myquery, function (err, obj) {
-    if (err) throw err;
-    console.log("1 document deleted");
-    response.status(obj);
-  });
 });
 
 module.exports = routes;
