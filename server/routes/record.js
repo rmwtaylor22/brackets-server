@@ -47,10 +47,21 @@ routes.route("/user").get(function (req, res) {
 
 routes.route("/games/").get(function (req, res) {
   let db_connect = dbo.getDb();
-  var query = { round: 1, bracket: "east" };
   db_connect
     .collection("teams")
-    .find(query)
+    .find({round: 1, bracket: req.params.id})
+    .toArray(function (err, result) {
+      if (err) throw err;
+      res.json(result);
+    });
+});
+
+routes.route("/games/left").get(function (req, res) {
+  let db_connect = dbo.getDb();
+  db_connect
+    .collection("teams")
+    .find({round: 1})
+    .limit(16)
     .toArray(function (err, result) {
       if (err) throw err;
       res.json(result);
