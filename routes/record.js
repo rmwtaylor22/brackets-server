@@ -25,7 +25,7 @@ app.use('/login', (req, res) => {
   });
 });
 
-app.listen(3000, () => console.log('API is running on http://localhost:3000/login'));
+app.listen(3000, () => console.log('API is running on http://localhost:3000'));
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -45,7 +45,7 @@ routes.route("/user").get(function (req, res) {
     });
 });
 
-routes.route("/games/").get(function (req, res) {
+routes.route("/games/:id").get(function (req, res) {
   let db_connect = dbo.getDb();
   db_connect
     .collection("teams")
@@ -56,17 +56,6 @@ routes.route("/games/").get(function (req, res) {
     });
 });
 
-routes.route("/games/left").get(function (req, res) {
-  let db_connect = dbo.getDb();
-  db_connect
-    .collection("teams")
-    .find({round: 1})
-    .limit(16)
-    .toArray(function (err, result) {
-      if (err) throw err;
-      res.json(result);
-    });
-});
 
 // This section will help you get a single user by id
 routes.route("/user/:id").get(function (req, res) {
@@ -93,8 +82,10 @@ routes.route("/user/add").post(function (req, response) {
   let db_connect = dbo.getDb();
   let myobj = {
     name: req.body.name,
-    username: req.body.username,
-    password: req.body.password,
+    choices: {
+      d1: req.body.choices.d1,
+      d2: req.body.choices.d2
+    },
     points: 0,
     date: Date.now()
   };
@@ -106,25 +97,12 @@ routes.route("/user/add").post(function (req, response) {
   });
   }
   */
-  db_connect.collection("users").insertOne(myobj, function (err, res) {
+  db_connect.collection("picks").insertOne(myobj, function (err, res) {
     if (err) throw err;
     response.json(res);
   });
 });
 
 
-// This section will help you get a list of all the users.
-routes.route("/team/:region").get(function (req, res) {
-  let db_connect = dbo.getDb();
-  var query = { round: 1, bracket: req.params.region };
-  db_connect
-    .collection("teams")
-    .find( query , { projection: { _id: 0, 'teamA.name': 1, 'teamB.name': 1 }})
-    .toArray(function (err, result) {
-      if (err) throw err;
-      console.log(result);
-      res.json(result);
-    });
-});
 
 module.exports = routes;
