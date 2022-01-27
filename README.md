@@ -36,4 +36,4 @@ During January, around <b>160</b> hours were spent on this project.
 -----------------------------
 
 # How to begin program
-The "mern" project folder has the two sub-folders of "client" and "server". To start the client, navigate to the folder and run `npm start`. To start the server, navigate to the server and run 'node server.js`.
+To start the client, navigate to the 'client' folder and run `npm start`. To start the server, navigate to the 'server' folder and run `node server.js`.
