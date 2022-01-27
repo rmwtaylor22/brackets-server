@@ -31,7 +31,7 @@ During January, around <b>160</b> hours were spent on this project.
 | Auth (fail) | 40          |
 | UI/ React   | 45          |
 
-<em>hours tracked by 1/26/20222<em>
+<em>hours tracked by 1/26/20222</em>
 
 -----------------------------
 
