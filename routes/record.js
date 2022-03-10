@@ -1,6 +1,11 @@
 // aquire express 
 const express = require('express')
 
+const routes = express.Router();
+
+// This will help us connect to the database
+const dbo = require("../db/conn");
+
 // initialize the application
 const app = express()
 
@@ -15,29 +20,6 @@ app.use(express.json())
 const mongoose = require('mongoose')
 mongoose.connect('mongodb+srv://mern:mongodb@brackets.l3ri0.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
 const User = require('../models/user.model')
-// Login stuff
-// const express = require('express');
-const cors = require("cors");
-const app = express();
-
-try {
-  // Connect to the MongoDB cluster
-  mongoose.connect(
-    mongoAtlasUri,
-    { useNewUrlParser: true, useUnifiedTopology: true },
-    () => console.log(" Mongoose is connected"),
-  );
-} catch (e) {
-  console.log("could not connect");
-}
-
-app.use("/login", (req, res) => {
-  res.send({
-    token: "test123",
-  });
-});
-
-app.listen(3000, () => console.log("API is running on http://localhost:3000"));
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -208,7 +208,6 @@ for r in colPicks.find({}):
                 potentialScore += remainingWins
 
     
-    #print(r['name'], "scored", totalPoints)
 
     # Update totalPoints in picks collection
     colPicks.update_one({
