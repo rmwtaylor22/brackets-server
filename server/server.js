@@ -35,6 +35,9 @@ dbConnection.once("open", () => console.log("Connected to DB!"));
 // import user model
 const User = require("./models/user.model");
 
+
+
+
 // call some routes
 
 // register
@@ -67,6 +70,28 @@ app.post("/api/user/login", async (req, res) => {
     return res.json({ status: "error", user: false });
   }
 });
+
+// get users and scores
+/* app.get("/api/user/leaderboard", async (req, res) => {
+  const user = await User.find({})
+    .toArray(function (err, result) {
+      if (err) throw err;
+      res.json(result);
+      console.log(result)
+    });
+}); */
+// This section will help you get a list of all the users.
+routes.route("/user").get(function (req, res) {
+  let db_connect = dbo.getDb();
+  db_connect
+    .collection("users")
+    .find({})
+    .toArray(function (err, result) {
+      if (err) throw err;
+      res.json(result);
+    });
+});
+
 
 // start the server
 app.listen(1337, () => {
