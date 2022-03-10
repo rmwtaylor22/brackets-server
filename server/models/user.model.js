@@ -1,15 +1,16 @@
 const mongoose = require('mongoose')
 
-const User = new mongoose.Schema({
-    name: { type: String, required: true },
-    username: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    createdAt: { type: Date, default: Date.now },
-    points: { type: Number, default: 0 }
-},
-{collection: 'users'}
+const User = new mongoose.Schema(
+    {
+        name: { type: String, required: true, unique: true },
+        choices: { type: Array, required: true },
+        points: { type: String, required: true },
+        potentialPoints: { type: String, required: true },
+        date: { type: Date }
+    },
+    { collection: 'picks' }
 )
 
-const model = mongoose.model('user', User)
+const model = mongoose.model('Picks', User)
 
 module.exports = model
