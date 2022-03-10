@@ -1,15 +1,15 @@
-const express = require("express");
+// aquire express 
+const express = require('express')
 
-// routes is an instance of the express router.
-// We use it to define our routes.
-// The router will be added as a middleware and will take control of requests starting with path /record.
-const routes = express.Router();
+// initialize the application
+const app = express()
 
-// This will help us connect to the database
-const dbo = require("../db/conn");
+// cors is middleware, helps communication between the cross origin
+const cors = require('cors')
+app.use(cors())
 
-// This help convert the id from string to ObjectId for the _id.
-const ObjectId = require("mongodb").ObjectId;
+// Stringifies the data coming in from the requests
+app.use(express.json())
 
 // connect to mongoose
 const mongoose = require('mongoose')
@@ -20,7 +20,16 @@ const User = require('../models/user.model')
 const cors = require("cors");
 const app = express();
 
-app.use(cors());
+try {
+  // Connect to the MongoDB cluster
+  mongoose.connect(
+    mongoAtlasUri,
+    { useNewUrlParser: true, useUnifiedTopology: true },
+    () => console.log(" Mongoose is connected"),
+  );
+} catch (e) {
+  console.log("could not connect");
+}
 
 app.use("/login", (req, res) => {
   res.send({
@@ -30,7 +39,6 @@ app.use("/login", (req, res) => {
 
 app.listen(3000, () => console.log("API is running on http://localhost:3000"));
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
