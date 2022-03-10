@@ -191,6 +191,7 @@ routes.route("/user/add").post(async (req, response) => {
         req.body.choices.d63,
       ],
       points: 0,
+      potentialPoints: 0,
       date: Date.now(),
     
     })

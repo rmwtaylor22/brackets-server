@@ -5,6 +5,7 @@ const User = new mongoose.Schema(
         name: { type: String, required: true, unique: true },
         choices: { type: Array, required: true },
         points: { type: String, required: true },
+        potentialPoints: { type: String, required: true },
         date: { type: Date }
     },
     { collection: 'picks' }
