@@ -155,27 +155,58 @@ for item in winnerList:
 for key, value in winCount.items():
     print ("% s : % d"%(key, value))
 
-# for each user('picks') get all picks and put in dictionary
+
+
+### Find teams that are out of the league
+teams_out=[]
+for games in mycol.find({"teamA.won": False}):
+    teams_out.append(games['teamA']['name'])  # append name of team A who lost onto the list
+for games in mycol.find({"teamB.won": False}):
+    teams_out.append(games['teamB']['name'])  # append name of team B who lost onto the list
+
+
+############################################################
+# for each user, get all picks and put in dictionary
 for r in colPicks.find({}):
-    #print(r['_id'])
-    pickCount = {}
-    for count in r['choices']:
-        if (count in pickCount):
-            pickCount[count] += 1
-        else:
-            pickCount[count] = 1
-        
+
     # restart points
     totalPoints = 0
 
-    # compare picks dictionary with wins dictionary
-    # works without seed information
+
+    # Count number of times each team was chosen
+    pickCount = {}
+    for count in r['choices']:
+        if (count == ""):  # glitch that I'm too lazy to fix right now
+            pass
+        else:
+            if (count in pickCount):
+                pickCount[count] += 1
+            else:
+                pickCount[count] = 1
+
     for team in winCount:
         if team in pickCount:
             if (pickCount[team] <= winCount[team]):
-                totalPoints += int(seedDict[team])*2^int(pickCount[team])
+                totalPoints += int(seedDict[team])*2**int(pickCount[team])
             else:
-                totalPoints += int(seedDict[team])*2^int(winCount[team])
+                totalPoints += int(seedDict[team])*2**int(winCount[team])
+
+    # for each team guesses in dictionary, if they're not out yet, add additional points to potential score
+    potentialScore = totalPoints
+    for guess in pickCount:
+        if guess in teams_out:
+            pass
+        else:
+            # If the times predicted to win are less than or equal to the times the team has won, pass
+            if (int(winCount[guess])>=int(pickCount[guess])):
+                pass
+            else:
+                currentTeamPoints = int(seedDict[guess])*2**int(winCount[guess])
+                potentialTeamPoints = int(seedDict[guess])*2**int(pickCount[guess])
+                print(pickCount[guess])
+                remainingWins = int(potentialTeamPoints - currentTeamPoints)
+                potentialScore += remainingWins
+
     
     #print(r['name'], "scored", totalPoints)
 
@@ -184,7 +215,8 @@ for r in colPicks.find({}):
         '_id': r['_id']
         },{
         '$set': {
-            'points': totalPoints
+            'points': totalPoints,
+            'potentialPoints': potentialScore
         }
         }, upsert=False)
 
