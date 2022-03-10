@@ -1,3 +1,7 @@
 [submodule "bob-and-dee-brackets"]
 	path = bob-and-dee-brackets
 	url = https://github.com/rmwtaylor22/bob-and-dee-brackets.git
+
+[submodule "client"]
+	path = bob-and-dee-brackets
+	url = https://github.com/rmwtaylor22/bob-and-dee-brackets.git
