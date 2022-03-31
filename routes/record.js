@@ -16,9 +16,6 @@ app.use(cors())
 // Stringifies the data coming in from the requests
 app.use(express.json())
 
-// connect to mongoose
-const mongoose = require('mongoose')
-mongoose.connect('mongodb+srv://mern:mongodb@brackets.l3ri0.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
 const User = require('../models/user.model')
 
 
